@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:todo_app/db_helper.dart';
 import 'package:todo_app/todo.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Homepage extends StatefulWidget {
-
   @override
   _HomepageState createState() => _HomepageState();
 }
@@ -13,59 +13,61 @@ class _HomepageState extends State<Homepage> {
 
   List<Todo> todoTasks;
   List<Todo> doneTasks;
-  int countTodoTasks = 0;
-  int countDoneTasks = 0;
   final addTaskController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     if (todoTasks == null && doneTasks == null) {
       updateLists();
+      return Center(
+          child: SpinKitRotatingCircle(
+            color: Colors.blueAccent,
+            size: 50.0,
+          ));
     }
     return Scaffold(
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
+            Text(
+              "TO-DO",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
             Expanded(
                 child: ListView.builder(
-                    itemCount: countTodoTasks,
+                    itemCount: todoTasks.length,
                     itemBuilder: (BuildContext context, int index) {
-                      if (index == 0) {
-                        return ListTile(
-                          title: Text(
-                            "TO-DO",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24),
-                          ),
+                      if (todoTasks.isEmpty) {
+                        return Center(
+                          child: Text("any to-do tasks yet!"),
                         );
                       }
                       return CheckboxListTile(
-                        title: Text(todoTasks[index - 1].title),
+                        title: Text(todoTasks[index].title),
                         value: false,
                         onChanged: (bool value) {
-                          setState(() {
-                            doneTasks.add(todoTasks[index - 1]);
-                            todoTasks.removeAt(index - 1);
-                          });
+                            var todo = todoTasks[index];
+                            todo.done = true;
+                            todo.doneAt = DateTime.now();
+                            todoProvider.update(todo).then((_) => this.updateLists());
                         },
                       );
                     })),
+            Text(
+              "DONE",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            ),
             Expanded(
                 child: ListView.builder(
-                    itemCount: countDoneTasks,
+                    itemCount: doneTasks.length,
                     itemBuilder: (BuildContext context, int index) {
-                      if (index == 0) {
-                        return ListTile(
-                          title: Text(
-                            "DONE",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 24),
-                          ),
+                      if (doneTasks.isEmpty) {
+                        return Center(
+                          child: Text("any done tasks yet!"),
                         );
                       }
                       return ListTile(
-                          title: Text(
-                              doneTasks[index - 1].title,
+                          title: Text(doneTasks[index].title,
                               style: TextStyle(
                                   color: Colors.grey,
                                   decoration: TextDecoration.lineThrough)));
@@ -108,21 +110,19 @@ class _HomepageState extends State<Homepage> {
   }
 
   void updateLists() {
-      todoProvider.getAllTodo(false)
-          .then((list) {
-        setState(() {
-          this.todoTasks = list;
-          this.countTodoTasks = todoTasks.length + 1;
-        });
-      });
+    this.todoTasks = List();
+    this.doneTasks = List();
 
-      todoProvider.getAllTodo(true)
-          .then((list) {
-        setState(() {
-          doneTasks = list;
-          countDoneTasks = doneTasks.length + 1;
-        });
+    todoProvider.getAllTodo(false).then((list) {
+      setState(() {
+        this.todoTasks = list;
       });
+    });
+
+    todoProvider.getAllTodo(true).then((list) {
+      setState(() {
+        doneTasks = list;
+      });
+    });
   }
-
 }

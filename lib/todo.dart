@@ -24,7 +24,7 @@ class Todo {
       map[columnId] = id;
     }
     if (doneAt != null) {
-      map[columnId] = doneAt.toString();
+      map[columnDoneAt] = doneAt.toString();
     }
     return map;
   }

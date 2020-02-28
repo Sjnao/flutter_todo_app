@@ -25,6 +25,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   sqflite: ^1.2.0
   path_provider: 1.6.1
+  flutter_spinkit: ^4.1.2
 
 dev_dependencies:
   flutter_test:
