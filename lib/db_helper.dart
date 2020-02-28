@@ -17,8 +17,8 @@ class DatabaseHelper {
   Future<Database> initializeDatabase() async {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = dir.path + 'todo.db';
-
-   var db = await openDatabase(path, version: 1,
+    // https://github.com/tekartik/sqflite/blob/master/sqflite/doc/migration_example.md
+   var db = await openDatabase(path, version: 3,
         onCreate: (Database db, int version) async {
       await db.execute('''
             create table $tableTodo ( 
@@ -28,7 +28,15 @@ class DatabaseHelper {
               $columnCreatedAt text not null,
               $columnDoneAt text)
             ''');
-    });
+    }, onUpgrade: (db, oldVersion, newVersion) async {
+         var batch = db.batch();
+         switch (newVersion) {
+           case 3:
+             batch.execute('ALTER TABLE $tableTodo ADD $columnPriority TEXT');
+             break;
+         }
+         await batch.commit();
+       });
    return db;
   }
 }
@@ -60,7 +68,8 @@ class TodoProvider extends DatabaseHelper{
           columnDone,
           columnTitle,
           columnCreatedAt,
-          columnDoneAt
+          columnDoneAt,
+          columnPriority
         ],
         where: '$columnId = ?',
         whereArgs: [id]);
@@ -79,7 +88,8 @@ class TodoProvider extends DatabaseHelper{
           columnDone,
           columnTitle,
           columnCreatedAt,
-          columnDoneAt
+          columnDoneAt,
+          columnPriority
         ],
         where: '$columnDone = ?',
         whereArgs: [done ? 1 : 0]);

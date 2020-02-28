@@ -26,6 +26,7 @@ dependencies:
   sqflite: ^1.2.0
   path_provider: 1.6.1
   flutter_spinkit: ^4.1.2
+  intl: 0.15.7
 
 dev_dependencies:
   flutter_test:
