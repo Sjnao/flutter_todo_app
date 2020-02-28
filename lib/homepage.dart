@@ -29,9 +29,13 @@ class _HomepageState extends State<Homepage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Text(
-              "TO-DO",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SafeArea(
+                  child:Text(
+                "TO-DO",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              )),
             ),
             Expanded(
                 child: ListView.builder(
@@ -53,9 +57,12 @@ class _HomepageState extends State<Homepage> {
                         },
                       );
                     })),
-            Text(
-              "DONE",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "DONE",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
             ),
             Expanded(
                 child: ListView.builder(
