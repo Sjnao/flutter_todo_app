@@ -11,12 +11,10 @@ class App extends StatelessWidget {
       title: 'Todo App',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        primaryColor: Colors.blueAccent,
-        backgroundColor: Colors.orange[700]
-      ),
+          fontFamily: 'RobotoMono',
+          primaryColor: Colors.blueAccent,
+          backgroundColor: Colors.orange[700]),
       home: Homepage(),
     );
   }
 }
-
-

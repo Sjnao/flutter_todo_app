@@ -18,7 +18,7 @@ class DatabaseHelper {
     Directory dir = await getApplicationDocumentsDirectory();
     String path = dir.path + 'todo.db';
     // https://github.com/tekartik/sqflite/blob/master/sqflite/doc/migration_example.md
-   var db = await openDatabase(path, version: 3,
+   var db = await openDatabase(path, version: 5,
         onCreate: (Database db, int version) async {
       await db.execute('''
             create table $tableTodo ( 
@@ -29,11 +29,14 @@ class DatabaseHelper {
               $columnDoneAt text)
             ''');
     }, onUpgrade: (db, oldVersion, newVersion) async {
+     print('upgranding database to: $newVersion');
          var batch = db.batch();
          switch (newVersion) {
-           case 3:
+           case 5:
              batch.execute('ALTER TABLE $tableTodo ADD $columnPriority TEXT');
              break;
+           case 4:
+             batch.execute('DELETE FROM $tableTodo');
          }
          await batch.commit();
        });

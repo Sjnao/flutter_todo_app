@@ -4,6 +4,8 @@ import 'package:todo_app/todo.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 
+import 'dialog_add_todo.dart';
+
 class Homepage extends StatefulWidget {
   @override
   _HomepageState createState() => _HomepageState();
@@ -22,9 +24,9 @@ class _HomepageState extends State<Homepage> {
       updateLists();
       return Center(
           child: SpinKitRotatingCircle(
-            color: Colors.blueAccent,
-            size: 50.0,
-          ));
+        color: Colors.blueAccent,
+        size: 50.0,
+      ));
     }
     return Scaffold(
         body: Container(
@@ -40,10 +42,9 @@ class _HomepageState extends State<Homepage> {
                 padding: const EdgeInsets.all(16.0),
                 child: SafeArea(
                     child: Text(
-                      "TO-DO",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 32),
-                    )),
+                  "TO-DO",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 32),
+                )),
               ),
               Expanded(
                   child: ListView.builder(
@@ -60,13 +61,15 @@ class _HomepageState extends State<Homepage> {
                           title: Row(
                             children: <Widget>[
                               Text(todoTasks[index].title,
-                                  style: TextStyle(fontWeight: FontWeight.bold,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
                                       fontSize: 20)),
-                              Padding(padding: const EdgeInsets.only(right: 16),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 16),
                               ),
                               Text(
-                                  DateFormat('dd-MM-yyyy hh:mm').format(
-                                      todoTasks[index].createdAt),
+                                  DateFormat('dd-MM-yyyy hh:mm')
+                                      .format(todoTasks[index].createdAt),
                                   style: TextStyle(fontSize: 16)),
                             ],
                           ),
@@ -101,23 +104,24 @@ class _HomepageState extends State<Homepage> {
                         }
                         return ListTile(
                             title: Row(
-                              children: <Widget>[
-                                Text(doneTasks[index].title,
-                                    style: TextStyle(
-                                        color: Colors.grey[700],
-                                        fontSize: 20,
-                                        decoration: TextDecoration
-                                            .lineThrough)),
-                                Padding(padding: const EdgeInsets.only(
-                                    right: 16),
-                                ),
-                                Text(
-                                    DateFormat('dd-MM-yyyy hh:mm').format(
-                                        doneTasks[index].doneAt),
-                                    style: TextStyle(
-                                        color: Colors.grey[700], fontSize: 16)),
-                              ],
-                            ));
+                          children: <Widget>[
+                            Text(doneTasks[index].title,
+                                style: TextStyle(
+                                    color: Colors.grey[700],
+                                    fontSize: 20,
+                                    decoration: TextDecoration.lineThrough)),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                            ),
+                            Text(
+                                DateFormat('dd-MM-yyyy hh:mm')
+                                    .format(doneTasks[index].doneAt),
+                                style: TextStyle(
+                                    fontFamily: 'RobotoMono',
+                                    color: Colors.grey[700],
+                                    fontSize: 16)),
+                          ],
+                        ));
                       })),
             ],
           ),
@@ -126,83 +130,9 @@ class _HomepageState extends State<Homepage> {
           onPressed: () {
             showDialog(
                 context: context,
-                builder: (BuildContext context) {
-                  Priority priority = Priority.medium;
-                  var items = <Priority>[
-                    Priority.low,
-                    Priority.medium,
-                    Priority.height
-                  ].map((Priority p) {
-                    switch (p) {
-                      case Priority.low:
-                        return DropdownMenuItem<Priority>(
-                            value: p,
-                            child: Text('low')
-                        );
-                      case Priority.medium:
-                        return DropdownMenuItem<Priority>(
-                            value: p,
-                            child: Text('medium')
-                        );
-                      case Priority.height:
-                        return DropdownMenuItem<Priority>(
-                            value: p,
-                            child: Text('height')
-                        );
-                      default:
-                        return DropdownMenuItem<Priority>(
-                            value: p,
-                            child: Text(p.toString())
-                        );
-                    }
-                  }).toList();
-                  return AlertDialog(
-                    title: Text("Add Task"),
-                    content: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        TextField(
-                          controller: addTaskController,
-                          decoration: InputDecoration(hintText: "Task"),
-                        ),
-                        Row(
-                          children: <Widget>[
-                            Text("Priority: "),
-                            Spacer(),
-                            DropdownButton<Priority>(
-                                value: priority,
-                                onChanged: (Priority p) {
-                                  setState(() {
-                                    print(p);
-                                    priority = p;
-                                  });
-                                },
-                                items: items
-                            ),
-                          ],
-                        )
-                      ],
-                    ),
-                    actions: <Widget>[
-                      new FlatButton(
-                        child: new Text('Ok'),
-                        onPressed: () {
-                          setState(() {
-                            var todo = Todo();
-                            todo.title = addTaskController.text;
-                            todo.done = false;
-                            todo.createdAt = DateTime.now();
-                            todo.priority = priority;
-                            todoProvider.insert(todo);
-                            updateLists();
-                            addTaskController.text = '';
-                          });
-                          Navigator.of(context).pop();
-                        },
-                      )
-                    ],
-                  );
-                });
+                builder: (_) {
+                  return DialogAddTodo();
+                }).then((_) => updateLists() );
           },
           child: Icon(Icons.add),
         ));
